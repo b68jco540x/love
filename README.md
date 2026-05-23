@@ -1,80 +1,55 @@
-# Vibe-Coded bot
+# Love Bot
 
-A modular Telegram bot built with [grammY](https://grammy.dev/) and [Deno](https://deno.land/), deployed to Cloudflare Workers via [Denoflare](https://denoflare.dev/).
+A modular Telegram bot built with [grammY](https://grammy.dev/) and [Deno](https://deno.land/), optimized for Cloudflare Workers using [Denoflare](https://denoflare.dev/).
 
-Each feature lives in its own file inside `addons/`. Adding or removing a command is as simple as adding or deleting a file.
+Features are highly modular: each command lives in its own file inside the `addons/` directory.
 
-## Setup
+##  Setup & Deployment
 
-### 1. Install prerequisites
-
+### 1. Prerequisites
+Make sure you have installed:
 - [Deno](https://deno.land/)
 - [Denoflare](https://denoflare.dev/)
 
-### 2. Clone the repo
+### 2. Configure Environment Secrets
+Add the following secrets to your Cloudflare Worker:
+- `BOT_TOKEN`: Your Telegram bot token (**Required**)
+- `WEATHER_API_KEY`: OpenWeatherMap API key (Required for `/weather`)
+- `CAT_API_KEY`: thecatapi.com key *(Optional)*
+- `DOG_API_KEY`: thedogapi.com key *(Optional)*
 
-```bash
-git clone https://github.com/love/love
-cd love
-```
+### 3. Deploy to Cloudflare
+Make sure your `.denoflare` configuration is correct, then run:
 
-### 3. Configure `.denoflare`
+`bash
+denoflare push love --profile main
+`
 
-```json
-{
-  "$schema": "https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/common/config.schema.json",
-  "scripts": {
-    "fun-bot": {
-      "path": "bot.ts",
-      "localPort": 3031,
-      "workersDev": true
-    }
-  },
-  "profiles": {
-    "main": {
-      "accountId": "YOUR_CF_ACCOUNT_ID",
-      "apiToken": "YOUR_CF_API_TOKEN"
-    }
-  }
-}
-```
+### 4. Set the Webhook
+Register your Cloudflare Worker URL to Telegram by opening this link in your browser:
 
-### 4. Set Cloudflare Secrets
-
-In your Worker Variables and Secrets:
-
-| Secret | Description |
-- `BOT_TOKEN` | Telegram bot token
-- `CAT_API_KEY` | *(optional)* thecatapi.com key
-- `DOG_API_KEY` | *(optional)* thedogapi.com key
-- `WEATHER_API_KEY` | Required for `/weather` openweathermap.org
-
-### 5. Deploy
-
-```bash
-denoflare push fun-bot --profile main
-```
-
-### 6. Set Webhook
-
-```
-https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://love.<subdomain>.workers.dev/
-```
+`text
+https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://love.<your-subdomain>.workers.dev/
+`
 
 ---
 
-## Creating an Addon
+##  Managing Addons
 
-Every addon is a single `.ts` file in `addons/`. Here's the minimal template:
+Adding or removing a command is incredibly simple. All registered commands will automatically show up when users type `/help`.
 
-```ts
+### Creating a New Addon
+
+1. Create a new file in `addons/` (e.g., `myaddon.ts`):
+
+`ts
 import type { Bot } from "https://deno.land/x/grammy@v1.42.0/mod.ts";
 import type { Env } from "../core/types.ts";
 import { registerAddon } from "../core/index.ts";
 
 registerAddon({
-  name: "myaddon",          // unique name
-  commands: ["mycommand"],  // commands this addon exposes (for /help)
+  name: "myaddon", 
+  commands: [{ cmd: "mycommand", desc: "Replies with a friendly greeting" }], 
 
   register(bot: Bot, env: Env) {
     bot.command("mycommand", async (ctx) => {
@@ -82,89 +57,20 @@ registerAddon({
     });
   },
 });
-```
+`
 
-Then import it in `bot.ts`:
+2. Import your new file in `bot.ts`:
 
-```ts
+`ts
 import "./addons/myaddon.ts";
-```
+`
 
-That's it. `/mycommand` is now live. `/help` will also list it automatically.
+### Removing an Addon
 
-## Removing an Addon
+1. Delete the file from the `addons/` folder.
+2. Remove the `import` statement from `bot.ts`.
+3. Push the updates via Denoflare.
 
-1. Delete the file from `addons/`
-2. Remove its import from `bot.ts`
-3. Push again
+##  License
 
-The command disappears from the bot and from `/help`.
-
-## Addon with Refresh Button
-
-Use helpers from `core/helpers.ts`:
-
-```ts
-import { refreshKb, editPhoto } from "../core/helpers.ts";
-
-registerAddon({
-  name: "example",
-  commands: ["example"],
-
-  register(bot: Bot, env: Env) {
-    const fetchImage = async () => "https://example.com/image.jpg";
-
-    bot.command("example", async (ctx) => {
-      const url = await fetchImage();
-      await ctx.replyWithPhoto(url, {
-        reply_markup: refreshKb("example_refresh"),
-        reply_parameters: { message_id: ctx.message!.message_id },
-      });
-    });
-
-    bot.callbackQuery("example_refresh", async (ctx) => {
-      const url = await fetchImage();
-      await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, url, null, refreshKb("example_refresh"));
-      await ctx.answerCallbackQuery();
-    });
-  },
-});
-```
-
-## Core API Reference
-
-### `core/types.ts`
-
-```ts
-interface Env {
-  BOT_TOKEN: string;
-  CAT_API_KEY?: string;
-  DOG_API_KEY?: string;
-  WEATHER_API_KEY?: string;
-}
-
-interface Addon {
-  name: string;
-  commands: string[];           // listed in /help
-  register(bot: Bot, env: Env): void;
-}
-```
-
-### `core/index.ts`
-
-| Export | Description |
-- `registerAddon(addon)` | Register an addon (call on import) |
-- `getAddons()` | Get all registered addons |
-- `loadAddons(bot, env)` | Register all addons into the bot instance |
-
-### `core/helpers.ts`
-
-| Export | Description |
-- `refreshKb(cbData)` | Create InlineKeyboard with 🔄 Refresh button |
-- `waifuKb(nsfw, url)` | Create keyboard with Refresh + Source buttons |
-- `editPhoto(token, chatId, messageId, url, caption, kb)` | Edit an existing photo message |
-- `safeReply(ctx, text, opts?)` | Reply with Markdown, fallback to plain text on error |
-
-## License
-
-[MIT](https://github.com/b68jco540x/love/blob/main/LICENSE)
+[MIT License](https://github.com/b68jco540x/love/blob/main/LICENSE)
