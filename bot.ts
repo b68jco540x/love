@@ -17,6 +17,7 @@ import "./addons/pokemon.ts";
 import "./addons/anime.ts";
 import "./addons/manga.ts";
 import "./addons/rec.ts";
+import "./addons/vidsrc.ts";
 
 export type { Env };
 
