@@ -1,4 +1,4 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.42.0/mod.ts";
+import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
 import type { Env } from "../core/types.ts";
 import { registerAddon } from "../core/index.ts";
 import { safeReply } from "../core/helpers.ts";

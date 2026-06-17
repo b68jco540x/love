@@ -1,5 +1,5 @@
-import { InlineKeyboard } from "https://deno.land/x/grammy@v1.42.0/mod.ts";
-import type { Context } from "https://deno.land/x/grammy@v1.42.0/mod.ts";
+import { InlineKeyboard } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
+import type { Context } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
 
 export function refreshKb(cbData: string): InlineKeyboard {
   return new InlineKeyboard().text("🔄 Refresh", cbData);
