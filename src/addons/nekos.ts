@@ -1,8 +1,8 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import { InlineKeyboard } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Env } from "../core/types.ts";
-import { registerAddon } from "../core/index.ts";
-import { editPhoto } from "../core/helpers.ts";
+import type { Bot } from "grammy";
+import { InlineKeyboard } from "grammy";
+import type { Env } from "../core/types.js";
+import { registerAddon } from "../core/index.js";
+import { editPhoto } from "../core/helpers.js";
 
 const fetchNekos = async (tag: string | null) => {
   let url = "https://api.nekosapi.com/v4/images/random?limit=1&rating=safe";

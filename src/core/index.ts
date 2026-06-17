@@ -1,5 +1,5 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Addon, Env } from "./types.ts";
+import type { Bot } from "grammy";
+import type { Addon, Env } from "./types.js";
 
 const addons: Addon[] = [];
 

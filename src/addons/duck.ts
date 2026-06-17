@@ -1,7 +1,7 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Env } from "../core/types.ts";
-import { registerAddon } from "../core/index.ts";
-import { refreshKb, editPhoto } from "../core/helpers.ts";
+import type { Bot } from "grammy";
+import type { Env } from "../core/types.js";
+import { registerAddon } from "../core/index.js";
+import { refreshKb, editPhoto } from "../core/helpers.js";
 
 registerAddon({
   name: "duck",

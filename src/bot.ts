@@ -1,31 +1,29 @@
-import { Bot, webhookCallback } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { UserFromGetMe } from "https://deno.land/x/grammy@v1.42.0/types.ts";
+import { Bot, webhookCallback } from "grammy";
+import type { UserFromGetMe } from "grammy/types";
 
-import type { Env } from "./core/types.ts";
-import { loadAddons, generateHelp } from "./core/index.ts";
+import type { Env } from "./core/types.js";
+import { loadAddons, generateHelp } from "./core/index.js";
 
 // Addons — remove an import to disable that command entirely
-import "./addons/cat.ts";
-import "./addons/dog.ts";
-import "./addons/waifu.ts";
-import "./addons/duck.ts";
-import "./addons/fox.ts";
-import "./addons/neko.ts";
-import "./addons/nekos.ts";
-import "./addons/weather.ts";
-import "./addons/pokemon.ts";
-import "./addons/anime.ts";
-import "./addons/manga.ts";
-import "./addons/rec.ts";
-import "./addons/vidsrc.ts";
-import "./addons/yts.ts";
+import "./addons/cat.js";
+import "./addons/dog.js";
+import "./addons/waifu.js";
+import "./addons/duck.js";
+import "./addons/fox.js";
+import "./addons/neko.js";
+import "./addons/nekos.js";
+import "./addons/weather.js";
+import "./addons/pokemon.js";
+import "./addons/anime.js";
+import "./addons/manga.js";
+import "./addons/rec.js";
 
 export type { Env };
 
 let botInfo: UserFromGetMe | undefined;
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
       const bot = new Bot(env.BOT_TOKEN, { botInfo });
       if (!botInfo) { await bot.init(); botInfo = bot.botInfo; }

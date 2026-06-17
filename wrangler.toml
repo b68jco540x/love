@@ -1,0 +1,10 @@
+name = "love"
+main = "src/bot.ts"
+compatibility_date = "2026-06-17"
+compatibility_flags = ["nodejs_compat"]
+
+# Secrets are managed via Cloudflare Dashboard or:
+#   wrangler secret put BOT_TOKEN
+#   wrangler secret put WEATHER_API_KEY
+#   wrangler secret put CAT_API_KEY
+#   wrangler secret put DOG_API_KEY
