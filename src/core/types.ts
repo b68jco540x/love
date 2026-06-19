@@ -5,6 +5,8 @@ export interface Env {
   CAT_API_KEY?: string;
   DOG_API_KEY?: string;
   WEATHER_API_KEY?: string;
+  QUOTE_CHANNEL_ID?: string;
+  QUOTE_MESSAGE_ID?: string;
 }
 
 export interface Command {
