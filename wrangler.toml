@@ -3,6 +3,9 @@ main = "src/bot.ts"
 compatibility_date = "2026-06-17"
 compatibility_flags = ["nodejs_compat"]
 
+[triggers]
+crons = ["*/3 * * * *"]
+
 [observability]
 enabled = false
 head_sampling_rate = 1
@@ -23,3 +26,5 @@ head_sampling_rate = 1
 #   wrangler secret put WEATHER_API_KEY
 #   wrangler secret put CAT_API_KEY
 #   wrangler secret put DOG_API_KEY
+#   wrangler secret put QUOTE_CHANNEL_ID
+#   wrangler secret put QUOTE_MESSAGE_ID
