@@ -17,6 +17,7 @@ import "./addons/pokemon.js";
 import "./addons/anime.js";
 import "./addons/manga.js";
 import "./addons/rec.js";
+import { updateQuote } from "./addons/quote.js";
 
 export type { Env };
 
@@ -40,5 +41,9 @@ export default {
       console.error("CRASH:", err.message, err.stack);
       return new Response(err.stack ?? err.message, { status: 500 });
     }
+  },
+
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(updateQuote(env));
   },
 };
