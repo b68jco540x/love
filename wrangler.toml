@@ -28,3 +28,5 @@ head_sampling_rate = 1
 #   wrangler secret put DOG_API_KEY
 #   wrangler secret put QUOTE_CHANNEL_ID
 #   wrangler secret put QUOTE_MESSAGE_ID
+#   wrangler secret put TMDB_API_KEY
+#   wrangler secret put WYZIE_API_KEY
