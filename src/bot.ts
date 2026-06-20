@@ -17,6 +17,7 @@ import "./addons/pokemon.js";
 import "./addons/anime.js";
 import "./addons/manga.js";
 import "./addons/rec.js";
+import "./addons/subs.js";
 import { updateQuote } from "./addons/quote.js";
 
 export type { Env };
