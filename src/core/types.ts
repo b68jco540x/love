@@ -7,6 +7,8 @@ export interface Env {
   WEATHER_API_KEY?: string;
   QUOTE_CHANNEL_ID?: string;
   QUOTE_MESSAGE_ID?: string;
+  TMDB_API_KEY?: string;
+  WYZIE_API_KEY?: string;
 }
 
 export interface Command {
