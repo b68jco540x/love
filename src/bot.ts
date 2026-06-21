@@ -30,6 +30,11 @@ export default {
       const bot = new Bot(env.BOT_TOKEN, { botInfo });
       if (!botInfo) { await bot.init(); botInfo = bot.botInfo; }
 
+      bot.catch((err) => {
+        console.error("Handler error:", err.error);
+        err.ctx.reply("⚠️ Something went wrong, try again.").catch(() => {});
+      });
+
       bot.command(["start", "help"], async (ctx) => {
         await ctx.reply(`*Commands:*\n\n${generateHelp()}`, { parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
       });
