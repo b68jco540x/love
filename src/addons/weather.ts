@@ -1,7 +1,16 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply } from "../core/helpers.js";
+import { safeReply, safeFetchJson } from "../core/helpers.js";
+
+interface WeatherResp {
+  cod: number;
+  name: string;
+  sys: { country: string };
+  weather: { description: string }[];
+  main: { temp: number; feels_like: number; humidity: number };
+  wind: { speed: number };
+}
 
 registerAddon({
   name: "weather",
@@ -12,9 +21,10 @@ registerAddon({
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /weather <city>"); return; }
       if (!env.WEATHER_API_KEY) { await ctx.reply("Weather API key not configured."); return; }
-      const d = await fetch(
+      const d = await safeFetchJson<WeatherResp>(
         `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(query)}&appid=${env.WEATHER_API_KEY}&units=metric`
-      ).then(r => r.json());
+      );
+      if (!d) { await ctx.reply("Failed to fetch weather, try again later."); return; }
       if (d.cod !== 200) { await ctx.reply(`City "${query}" not found.`); return; }
       const w = d.weather[0];
       await safeReply(ctx, [
