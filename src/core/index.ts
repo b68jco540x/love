@@ -23,3 +23,7 @@ export function generateHelp(): string {
     .map(c => `/${c.cmd} — ${c.desc}`)
     .join("\n");
 }
+
+export function generateBotCommands(): { command: string; description: string }[] {
+  return addons.flatMap(a => a.commands).map(c => ({ command: c.cmd, description: c.desc }));
+}
