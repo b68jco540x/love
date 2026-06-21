@@ -1,7 +1,10 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply } from "../core/helpers.js";
+import { safeReply, safeFetchJson } from "../core/helpers.js";
+
+interface JikanSearchResp { data?: Record<string, any>[] }
+interface JikanRecResp { data?: { entry: { title: string } }[] }
 
 registerAddon({
   name: "rec",
@@ -16,14 +19,16 @@ registerAddon({
         await ctx.reply("Usage: /rec anime <title> or /rec manga <title>");
         return;
       }
-      const sd = await fetch(`https://api.jikan.moe/v4/${type}?q=${encodeURIComponent(title)}&limit=1`).then(r => r.json());
+      const sd = await safeFetchJson<JikanSearchResp>(`https://api.jikan.moe/v4/${type}?q=${encodeURIComponent(title)}&limit=1`);
+      if (!sd) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!sd.data?.length) { await ctx.reply(`Not found: "${title}"`); return; }
       const item = sd.data[0];
-      const rd = await fetch(`https://api.jikan.moe/v4/${type}/${item.mal_id}/recommendations`).then(r => r.json());
+      const rd = await safeFetchJson<JikanRecResp>(`https://api.jikan.moe/v4/${type}/${item.mal_id}/recommendations`);
+      if (!rd) { await ctx.reply("Failed to fetch recommendations, try again later."); return; }
       if (!rd.data?.length) { await ctx.reply(`No recommendations for "${item.title}".`); return; }
       const lines = [
         `*Recommendations based on ${item.title}:*`, ``,
-        ...rd.data.slice(0, 5).map((r: { entry: { title: string } }, i: number) => `${i + 1}. ${r.entry.title}`),
+        ...rd.data.slice(0, 5).map((r, i) => `${i + 1}. ${r.entry.title}`),
       ].join("\n");
       const cover = item.images?.jpg?.large_image_url;
       if (cover) await ctx.replyWithPhoto(cover, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
