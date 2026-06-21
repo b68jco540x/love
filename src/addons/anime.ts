@@ -1,7 +1,11 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply } from "../core/helpers.js";
+import { safeReply, safeFetchJson } from "../core/helpers.js";
+
+interface KitsuResp { data?: { attributes: Record<string, any> }[] }
+interface AniListResp { data?: { Media: Record<string, any> | null } }
+interface JikanAnimeResp { data?: Record<string, any>[] }
 
 registerAddon({
   name: "anime",
@@ -11,9 +15,10 @@ registerAddon({
     bot.command("kitsu", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /kitsu <title>"); return; }
-      const d = await fetch(`https://kitsu.io/api/edge/anime?filter[text]=${encodeURIComponent(query)}&page[limit]=1`, {
+      const d = await safeFetchJson<KitsuResp>(`https://kitsu.io/api/edge/anime?filter[text]=${encodeURIComponent(query)}&page[limit]=1`, {
         headers: { "Accept": "application/vnd.api+json" },
-      }).then(r => r.json());
+      });
+      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const a = d.data[0].attributes;
       const cover = a.posterImage?.large ?? a.posterImage?.medium;
@@ -35,11 +40,12 @@ registerAddon({
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /anilist <title>"); return; }
       const gql = `query ($search: String) { Media(search: $search, type: ANIME) { title { romaji native } coverImage { extraLarge } averageScore episodes status startDate { year month day } endDate { year month day } format genres } }`;
-      const json = await fetch("https://graphql.anilist.co", {
+      const json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
-      }).then(r => r.json());
+      });
+      if (!json) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = json.data?.Media;
       if (!a) { await ctx.reply(`Not found: "${query}"`); return; }
       const fmt = (d: { year?: number; month?: number; day?: number }) =>
@@ -62,7 +68,8 @@ registerAddon({
     bot.command("mal", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /mal <title>"); return; }
-      const d = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`).then(r => r.json());
+      const d = await safeFetchJson<JikanAnimeResp>(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`);
+      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const a = d.data[0];
       const lines = [
