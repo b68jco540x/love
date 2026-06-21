@@ -2,12 +2,12 @@ import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { editPhoto } from "../core/helpers.js";
+import { editPhoto, safeFetchJson } from "../core/helpers.js";
 
 const fetchNekos = async (tag: string | null) => {
   let url = "https://api.nekosapi.com/v4/images/random?limit=1&rating=safe";
   if (tag) url += `&tags=${encodeURIComponent(tag)}`;
-  const json = await fetch(url).then(r => r.json());
+  const json = await safeFetchJson<unknown>(url);
   return Array.isArray(json) ? json[0] : null;
 };
 
@@ -31,8 +31,8 @@ registerAddon({
       if (!img) { await ctx.answerCallbackQuery("No results found."); return; }
       const caption = img.tags?.length ? `• Tags: ${img.tags.join(", ")}` : null;
       const kb = new InlineKeyboard().text("🔄 Refresh", ctx.callbackQuery.data);
-      await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, img.url, caption, kb);
-      await ctx.answerCallbackQuery();
+      const ok = await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, img.url, caption, kb);
+      await ctx.answerCallbackQuery(ok ? undefined : { text: "Edit failed." });
     });
   },
 });
