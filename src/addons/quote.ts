@@ -17,7 +17,14 @@ async function safeFetchJson<T>(url: string, init?: RequestInit): Promise<T | nu
   }
 }
 
-// Cron entrypoint — edits a fixed channel msg with a fresh hitokoto.cn quote.
+// Escape markdown special chars for Telegram's Rich Message markdown (Bot API 10.1+).
+function escMd(s: string): string {
+  return s.replace(/[\\*_`[\]]/g, "\\$&");
+}
+
+// Cron entrypoint — edits a fixed channel msg with a fresh hitokoto.cn quote,
+// using Telegram's Rich Message format (Bot API 10.1, June 2026): blockquote
+// for the saying, bold author, date_time footer for "last updated".
 // NOTE: Telegram editMessageText only works on msgs originally sent by THIS bot.
 export async function updateQuote(env: Env): Promise<void> {
   if (!env.QUOTE_CHANNEL_ID || !env.QUOTE_MESSAGE_ID) {
@@ -29,7 +36,14 @@ export async function updateQuote(env: Env): Promise<void> {
   if (!q) { console.error("quote: failed to fetch hitokoto"); return; }
 
   const author = q.from_who ?? q.from ?? "Unknown";
-  const text = `💭 ${q.hitokoto}\n\n— ${author}`;
+  const now = Math.floor(Date.now() / 1000);
+  const markdown = [
+    `> 💭 ${escMd(q.hitokoto)}`,
+    ``,
+    `— **${escMd(author)}**`,
+    ``,
+    `diupdate ![now](tg://time?unix=${now}&format=r)`,
+  ].join("\n");
 
   const data = await safeFetchJson<{ ok: boolean; description?: string }>(
     `https://api.telegram.org/bot${env.BOT_TOKEN}/editMessageText`,
@@ -39,7 +53,7 @@ export async function updateQuote(env: Env): Promise<void> {
       body: JSON.stringify({
         chat_id: env.QUOTE_CHANNEL_ID,
         message_id: Number(env.QUOTE_MESSAGE_ID),
-        text,
+        rich_message: { markdown },
       }),
     },
   );
