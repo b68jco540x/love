@@ -42,7 +42,7 @@ export async function updateQuote(env: Env): Promise<void> {
     ``,
     `— **${escMd(author)}**`,
     ``,
-    `diupdate ![now](tg://time?unix=${now}&format=r)`,
+    `updated ![now](tg://time?unix=${now}&format=r)`,
   ].join("\n");
 
   const data = await safeFetchJson<{ ok: boolean; description?: string }>(
