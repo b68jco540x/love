@@ -2,7 +2,7 @@ import { Bot, webhookCallback } from "grammy";
 import type { UserFromGetMe } from "grammy/types";
 
 import type { Env } from "./core/types.js";
-import { loadAddons, generateHelp } from "./core/index.js";
+import { loadAddons, generateHelp, generateBotCommands } from "./core/index.js";
 
 // Addons — remove an import to disable that command entirely
 import "./addons/cat.js";
@@ -28,7 +28,11 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
       const bot = new Bot(env.BOT_TOKEN, { botInfo });
-      if (!botInfo) { await bot.init(); botInfo = bot.botInfo; }
+      if (!botInfo) {
+        await bot.init();
+        botInfo = bot.botInfo;
+        await bot.api.setMyCommands(generateBotCommands()).catch((err) => console.error("setMyCommands failed:", err));
+      }
 
       bot.catch((err) => {
         console.error("Handler error:", err.error);
