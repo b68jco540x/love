@@ -1,12 +1,12 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { waifuKb, editPhoto } from "../core/helpers.js";
+import { waifuKb, editPhoto, safeFetchJson } from "../core/helpers.js";
 
-const fetchWaifu = async (nsfw: boolean): Promise<string> => {
+const fetchWaifu = async (nsfw: boolean): Promise<string | null> => {
   const url = nsfw ? "https://api.waifu.pics/nsfw/waifu" : "https://api.waifu.pics/sfw/waifu";
-  const d = await fetch(url).then(r => r.json());
-  return d.url;
+  const d = await safeFetchJson<{ url: string }>(url);
+  return d?.url ?? null;
 };
 
 registerAddon({
@@ -17,6 +17,7 @@ registerAddon({
     bot.command("waifu", async (ctx) => {
       const nsfw = (ctx.match?.trim() ?? "") === "-nsfw";
       const url = await fetchWaifu(nsfw);
+      if (!url) { await ctx.reply("Failed to fetch waifu, try again later."); return; }
       await ctx.replyWithPhoto(url, { reply_markup: waifuKb(nsfw, url), reply_parameters: { message_id: ctx.message!.message_id } });
     });
 
@@ -24,8 +25,9 @@ registerAddon({
       bot.callbackQuery(cb, async (ctx) => {
         const nsfw = cb === "waifu_refresh_nsfw";
         const url = await fetchWaifu(nsfw);
-        await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, url, null, waifuKb(nsfw, url));
-        await ctx.answerCallbackQuery();
+        if (!url) { await ctx.answerCallbackQuery({ text: "Failed to fetch, try again." }); return; }
+        const ok = await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, url, null, waifuKb(nsfw, url));
+        await ctx.answerCallbackQuery(ok ? undefined : { text: "Edit failed." });
       });
     }
   },
