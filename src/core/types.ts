@@ -9,6 +9,7 @@ export interface Env {
   QUOTE_MESSAGE_ID?: string;
   TMDB_API_KEY?: string;
   WYZIE_API_KEY?: string;
+  WAIFU_API_KEY?: string;
 }
 
 export interface Command {
