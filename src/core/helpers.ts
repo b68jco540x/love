@@ -5,12 +5,6 @@ export function refreshKb(cbData: string): InlineKeyboard {
   return new InlineKeyboard().text("🔄 Refresh", cbData);
 }
 
-export function waifuKb(nsfw: boolean, url: string): InlineKeyboard {
-  return new InlineKeyboard()
-    .text("🔄 Refresh", nsfw ? "waifu_refresh_nsfw" : "waifu_refresh_sfw")
-    .url("🔗 Source", url);
-}
-
 // Wraps fetch+json with try/catch + .ok check. Returns null on any failure
 // (network error, non-2xx, bad json) instead of throwing into the handler.
 export async function safeFetchJson<T = unknown>(url: string, init?: RequestInit): Promise<T | null> {

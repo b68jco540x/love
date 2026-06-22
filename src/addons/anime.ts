@@ -39,11 +39,14 @@ registerAddon({
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /anilist <title>"); return; }
       const gql = `query ($search: String) { Media(search: $search, type: ANIME) { title { romaji native } coverImage { extraLarge } averageScore episodes status startDate { year month day } endDate { year month day } format genres } }`;
-      const json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", {
+      const reqInit: RequestInit = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
-      });
+      };
+      // AniList rate-limits/5xx transiently; retry once before giving up.
+      let json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      if (!json) json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
       if (!json) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = json.data?.Media;
       if (!a) { await ctx.reply(`Not found: "${query}"`); return; }

@@ -10,7 +10,6 @@ import "./addons/dog.js";
 import "./addons/waifu.js";
 import "./addons/duck.js";
 import "./addons/fox.js";
-import "./addons/neko.js";
 import "./addons/nekos.js";
 import "./addons/weather.js";
 import "./addons/pokemon.js";

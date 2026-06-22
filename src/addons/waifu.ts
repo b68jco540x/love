@@ -1,34 +1,22 @@
-import type { Bot } from "grammy";
-import type { Env } from "../core/types.js";
-import { registerAddon } from "../core/index.js";
-import { waifuKb, editPhoto, safeFetchJson, replyTo } from "../core/helpers.js";
+import { createImageAddon } from "../core/imageAddon.js";
+import { safeFetchJson } from "../core/helpers.js";
 
-const fetchWaifu = async (nsfw: boolean): Promise<string | null> => {
-  const url = nsfw ? "https://api.waifu.pics/nsfw/waifu" : "https://api.waifu.pics/sfw/waifu";
-  const d = await safeFetchJson<{ url: string }>(url);
-  return d?.url ?? null;
-};
+interface NekosBestResp {
+  results?: { url: string }[];
+}
 
-registerAddon({
+// /waifu merges the former /neko + /waifu pools into one SFW command.
+// The old upstream (api.waifu.pics) is dead, so we pull from nekos.best and
+// pick a random category each call for variety. NSFW support is dropped for now.
+const CATEGORIES = ["waifu", "neko"] as const;
+
+createImageAddon({
   name: "waifu",
-  commands: [{ cmd: "waifu", desc: "random waifu 🌸" }],
-
-  register(bot: Bot, env: Env) {
-    bot.command("waifu", async (ctx) => {
-      const nsfw = (ctx.match?.trim() ?? "") === "-nsfw";
-      const url = await fetchWaifu(nsfw);
-      if (!url) { await ctx.reply("Failed to fetch waifu, try again later."); return; }
-      await ctx.replyWithPhoto(url, { reply_markup: waifuKb(nsfw, url), reply_parameters: replyTo(ctx) });
-    });
-
-    for (const cb of ["waifu_refresh_sfw", "waifu_refresh_nsfw"]) {
-      bot.callbackQuery(cb, async (ctx) => {
-        const nsfw = cb === "waifu_refresh_nsfw";
-        const url = await fetchWaifu(nsfw);
-        if (!url) { await ctx.answerCallbackQuery({ text: "Failed to fetch, try again." }); return; }
-        const ok = await editPhoto(env.BOT_TOKEN, ctx.chat!.id, ctx.callbackQuery.message!.message_id, url, null, waifuKb(nsfw, url));
-        await ctx.answerCallbackQuery(ok ? undefined : { text: "Edit failed." });
-      });
-    }
+  command: "waifu",
+  desc: "random waifu 🌸",
+  async fetch() {
+    const cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+    const d = await safeFetchJson<NekosBestResp>(`https://nekos.best/api/v2/${cat}`);
+    return d?.results?.[0]?.url ?? null;
   },
 });
