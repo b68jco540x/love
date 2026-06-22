@@ -18,6 +18,7 @@ import "./addons/anime.js";
 import "./addons/manga.js";
 import "./addons/rec.js";
 import "./addons/subs.js";
+import "./addons/tmdb.js";
 import { updateQuote } from "./addons/quote.js";
 
 export type { Env };
