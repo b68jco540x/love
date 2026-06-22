@@ -1,20 +1,10 @@
 import type { Env } from "../core/types.js";
+import { safeFetchJson } from "../core/helpers.js";
 
 interface Hitokoto {
   hitokoto: string;
   from: string;
   from_who: string | null;
-}
-
-async function safeFetchJson<T>(url: string, init?: RequestInit): Promise<T | null> {
-  try {
-    const res = await fetch(url, init);
-    if (!res.ok) { console.error(`fetch ${res.status}: ${url}`); return null; }
-    return await res.json() as T;
-  } catch (err) {
-    console.error(`fetch error: ${url}`, err);
-    return null;
-  }
 }
 
 // Escape markdown special chars for Telegram's Rich Message markdown (Bot API 10.1+).

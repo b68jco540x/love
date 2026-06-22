@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
 
 interface TmdbSearchResult {
   id: number;
@@ -57,8 +57,7 @@ registerAddon({
       ].filter(Boolean).join("\n");
 
       const poster = d.poster_path ? `https://image.tmdb.org/t/p/w500${d.poster_path}` : null;
-      if (poster) await ctx.replyWithPhoto(poster, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, poster, lines);
     });
   },
 });

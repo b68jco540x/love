@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
 
 interface JikanMangaResp { data?: Record<string, any>[] }
 
@@ -30,8 +30,7 @@ registerAddon({
         `• Genres: ${m.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Authors: ${m.authors?.map((a: { name: string }) => a.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (m.images?.jpg?.large_image_url) await ctx.replyWithPhoto(m.images.jpg.large_image_url, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, m.images?.jpg?.large_image_url, lines);
     });
   },
 });

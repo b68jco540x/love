@@ -56,3 +56,28 @@ export async function safeReply(ctx: Context, text: string, opts: Record<string,
   try { await ctx.reply(text, { parse_mode: "Markdown", ...opts }); }
   catch { await ctx.reply(text, opts); }
 }
+
+// Builds the reply_parameters value that quotes the user's triggering message.
+// Centralizes the `ctx.message!.message_id` access repeated across every addon.
+export function replyTo(ctx: Context): { message_id: number } {
+  return { message_id: ctx.message!.message_id };
+}
+
+// Shared "info card" reply: send a photo with a Markdown caption when an image
+// is available, otherwise fall back to a plain Markdown text reply. Both paths
+// quote the triggering message. Used by anime/manga/pokemon/tmdb/rec.
+export async function replyWithPhotoOrText(
+  ctx: Context,
+  photo: string | null | undefined,
+  text: string,
+): Promise<void> {
+  if (photo) {
+    await ctx.replyWithPhoto(photo, {
+      caption: text,
+      parse_mode: "Markdown",
+      reply_parameters: replyTo(ctx),
+    });
+  } else {
+    await safeReply(ctx, text, { reply_parameters: replyTo(ctx) });
+  }
+}

@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
 
 interface JikanSearchResp { data?: Record<string, any>[] }
 interface JikanRecResp { data?: { entry: { title: string } }[] }
@@ -31,8 +31,7 @@ registerAddon({
         ...rd.data.slice(0, 5).map((r, i) => `${i + 1}. ${r.entry.title}`),
       ].join("\n");
       const cover = item.images?.jpg?.large_image_url;
-      if (cover) await ctx.replyWithPhoto(cover, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, cover, lines);
     });
   },
 });

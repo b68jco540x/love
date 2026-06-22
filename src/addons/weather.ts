@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { safeReply, replyTo, safeFetchJson } from "../core/helpers.js";
 
 interface WeatherResp {
   cod: number;
@@ -33,7 +33,7 @@ registerAddon({
         `• Temp: ${d.main.temp}°C (feels like ${d.main.feels_like}°C)`,
         `• Humidity: ${d.main.humidity}%`,
         `• Wind: ${d.wind.speed} m/s`,
-      ].join("\n"), { reply_parameters: { message_id: ctx.message!.message_id } });
+      ].join("\n"), { reply_parameters: replyTo(ctx) });
     });
   },
 });

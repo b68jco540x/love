@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { waifuKb, editPhoto, safeFetchJson } from "../core/helpers.js";
+import { waifuKb, editPhoto, safeFetchJson, replyTo } from "../core/helpers.js";
 
 const fetchWaifu = async (nsfw: boolean): Promise<string | null> => {
   const url = nsfw ? "https://api.waifu.pics/nsfw/waifu" : "https://api.waifu.pics/sfw/waifu";
@@ -18,7 +18,7 @@ registerAddon({
       const nsfw = (ctx.match?.trim() ?? "") === "-nsfw";
       const url = await fetchWaifu(nsfw);
       if (!url) { await ctx.reply("Failed to fetch waifu, try again later."); return; }
-      await ctx.replyWithPhoto(url, { reply_markup: waifuKb(nsfw, url), reply_parameters: { message_id: ctx.message!.message_id } });
+      await ctx.replyWithPhoto(url, { reply_markup: waifuKb(nsfw, url), reply_parameters: replyTo(ctx) });
     });
 
     for (const cb of ["waifu_refresh_sfw", "waifu_refresh_nsfw"]) {

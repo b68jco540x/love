@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
 
 interface PokemonResp {
   id: number;
@@ -33,8 +33,7 @@ registerAddon({
         `• Abilities: ${p.abilities.map(a => a.ability.name).join(", ")}`,
         `• Stats: ${p.stats.map(s => `${s.stat.name}: ${s.base_stat}`).join(" | ")}`,
       ].join("\n");
-      if (sprite) await ctx.replyWithPhoto(sprite, { caption, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, caption, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, sprite, caption);
     });
   },
 });

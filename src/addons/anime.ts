@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { safeReply, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
 
 interface KitsuResp { data?: { attributes: Record<string, any> }[] }
 interface AniListResp { data?: { Media: Record<string, any> | null } }
@@ -32,8 +32,7 @@ registerAddon({
         `• Type: ${a.subtype ?? "N/A"}`,
         `• Aired: ${a.startDate ?? "?"} → ${a.endDate ?? "ongoing"}`,
       ].filter(Boolean).join("\n");
-      if (cover) await ctx.replyWithPhoto(cover, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, cover, lines);
     });
 
     bot.command("anilist", async (ctx) => {
@@ -61,8 +60,7 @@ registerAddon({
         `• Aired: ${fmt(a.startDate)} → ${a.endDate?.year ? fmt(a.endDate) : "ongoing"}`,
         `• Genres: ${a.genres?.join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (a.coverImage?.extraLarge) await ctx.replyWithPhoto(a.coverImage.extraLarge, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, a.coverImage?.extraLarge, lines);
     });
 
     bot.command("mal", async (ctx) => {
@@ -84,8 +82,7 @@ registerAddon({
         `• Genres: ${a.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Studios: ${a.studios?.map((s: { name: string }) => s.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (a.images?.jpg?.large_image_url) await ctx.replyWithPhoto(a.images.jpg.large_image_url, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, a.images?.jpg?.large_image_url, lines);
     });
   },
 });
