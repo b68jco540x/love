@@ -1,7 +1,9 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Env } from "../core/types.ts";
-import { registerAddon } from "../core/index.ts";
-import { safeReply } from "../core/helpers.ts";
+import type { Bot } from "grammy";
+import type { Env } from "../core/types.js";
+import { registerAddon } from "../core/index.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
+
+interface JikanMangaResp { data?: Record<string, any>[] }
 
 registerAddon({
   name: "manga",
@@ -11,7 +13,8 @@ registerAddon({
     bot.command("manga", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /manga <title>"); return; }
-      const d = await fetch(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=1`).then(r => r.json());
+      const d = await safeFetchJson<JikanMangaResp>(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=1`);
+      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const m = d.data[0];
       const lines = [
@@ -27,8 +30,7 @@ registerAddon({
         `• Genres: ${m.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Authors: ${m.authors?.map((a: { name: string }) => a.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (m.images?.jpg?.large_image_url) await ctx.replyWithPhoto(m.images.jpg.large_image_url, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, m.images?.jpg?.large_image_url, lines);
     });
   },
 });

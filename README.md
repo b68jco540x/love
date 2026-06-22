@@ -1,55 +1,70 @@
 # Love Bot
 
-A modular Telegram bot built with [grammY](https://grammy.dev/) and [Deno](https://deno.land/), optimized for Cloudflare Workers using [Denoflare](https://denoflare.dev/).
+A modular Telegram bot built with [grammY](https://grammy.dev/) and **npm/TypeScript**, optimized for Cloudflare Workers using [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
 
-Features are highly modular: each command lives in its own file inside the `addons/` directory.
+Features are highly modular: each command lives in its own file inside the `src/addons/` directory.
 
-##  Setup & Deployment
+## 🚀 Setup & Deployment
 
 ### 1. Prerequisites
-Make sure you have installed:
-- [Deno](https://deno.land/)
-- [Denoflare](https://denoflare.dev/)
+- [Node.js](https://nodejs.org/) (v18+)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 
-### 2. Configure Environment Secrets
-Add the following secrets to your Cloudflare Worker:
-- `BOT_TOKEN`: Your Telegram bot token (**Required**)
-- `WEATHER_API_KEY`: OpenWeatherMap API key (Required for `/weather`)
-- `CAT_API_KEY`: thecatapi.com key *(Optional)*
-- `DOG_API_KEY`: thedogapi.com key *(Optional)*
+```bash
+npm install -g wrangler
+wrangler login
+```
 
-### 3. Deploy to Cloudflare
-Make sure your `.denoflare` configuration is correct, then run:
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-`bash
-denoflare push love --profile main
-`
+### 3. Configure Environment Secrets
+Secrets are already configured in your Cloudflare Worker dashboard from the previous Denoflare deployment. They will continue to work automatically.
 
-### 4. Set the Webhook
-Register your Cloudflare Worker URL to Telegram by opening this link in your browser:
+If you need to set or update them via CLI:
+```bash
+wrangler secret put BOT_TOKEN
+wrangler secret put WEATHER_API_KEY
+wrangler secret put CAT_API_KEY
+wrangler secret put DOG_API_KEY
+```
 
-`text
+### 4. Deploy to Cloudflare
+```bash
+npm run deploy
+```
+
+Or manually:
+```bash
+wrangler deploy
+```
+
+### 5. Webhook (One-time setup)
+If your Worker URL changed, set the webhook:
+```
 https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://love.<your-subdomain>.workers.dev/
-`
+```
 
 ---
 
-##  Managing Addons
+## 📦 Managing Addons
 
 Adding or removing a command is incredibly simple. All registered commands will automatically show up when users type `/help`.
 
 ### Creating a New Addon
 
-1. Create a new file in `addons/` (e.g., `myaddon.ts`):
+1. Create a new file in `src/addons/` (e.g., `myaddon.ts`):
 
-`ts
-import type { Bot } from "https://deno.land/x/grammy@v1.42.0/mod.ts";
-import type { Env } from "../core/types.ts";
-import { registerAddon } from "../core/index.ts";
+```ts
+import type { Bot } from "grammy";
+import type { Env } from "../core/types.js";
+import { registerAddon } from "../core/index.js";
 
 registerAddon({
-  name: "myaddon", 
-  commands: [{ cmd: "mycommand", desc: "Replies with a friendly greeting" }], 
+  name: "myaddon",
+  commands: [{ cmd: "mycommand", desc: "Replies with a friendly greeting" }],
 
   register(bot: Bot, env: Env) {
     bot.command("mycommand", async (ctx) => {
@@ -57,20 +72,44 @@ registerAddon({
     });
   },
 });
-`
+```
 
-2. Import your new file in `bot.ts`:
+2. Import your new file in `src/bot.ts`:
 
-`ts
-import "./addons/myaddon.ts";
-`
+```ts
+import "./addons/myaddon.js";
+```
+
+3. Deploy:
+
+```bash
+npm run deploy
+```
 
 ### Removing an Addon
 
-1. Delete the file from the `addons/` folder.
-2. Remove the `import` statement from `bot.ts`.
-3. Push the updates via Denoflare.
+1. Delete the file from the `src/addons/` folder.
+2. Remove the `import` statement from `src/bot.ts`.
+3. Deploy via `npm run deploy`.
 
-##  License
+---
 
-[MIT License](https://github.com/b68jco540x/love/blob/main/LICENSE)
+## 🛠️ Development
+
+Run locally with hot reload:
+
+```bash
+npm run dev
+```
+
+View live logs:
+
+```bash
+npm run tail
+```
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE)

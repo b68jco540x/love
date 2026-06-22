@@ -1,7 +1,11 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Env } from "../core/types.ts";
-import { registerAddon } from "../core/index.ts";
-import { safeReply } from "../core/helpers.ts";
+import type { Bot } from "grammy";
+import type { Env } from "../core/types.js";
+import { registerAddon } from "../core/index.js";
+import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
+
+interface KitsuResp { data?: { attributes: Record<string, any> }[] }
+interface AniListResp { data?: { Media: Record<string, any> | null } }
+interface JikanAnimeResp { data?: Record<string, any>[] }
 
 registerAddon({
   name: "anime",
@@ -11,9 +15,10 @@ registerAddon({
     bot.command("kitsu", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /kitsu <title>"); return; }
-      const d = await fetch(`https://kitsu.io/api/edge/anime?filter[text]=${encodeURIComponent(query)}&page[limit]=1`, {
+      const d = await safeFetchJson<KitsuResp>(`https://kitsu.io/api/edge/anime?filter[text]=${encodeURIComponent(query)}&page[limit]=1`, {
         headers: { "Accept": "application/vnd.api+json" },
-      }).then(r => r.json());
+      });
+      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const a = d.data[0].attributes;
       const cover = a.posterImage?.large ?? a.posterImage?.medium;
@@ -27,19 +32,22 @@ registerAddon({
         `• Type: ${a.subtype ?? "N/A"}`,
         `• Aired: ${a.startDate ?? "?"} → ${a.endDate ?? "ongoing"}`,
       ].filter(Boolean).join("\n");
-      if (cover) await ctx.replyWithPhoto(cover, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, cover, lines);
     });
 
     bot.command("anilist", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /anilist <title>"); return; }
       const gql = `query ($search: String) { Media(search: $search, type: ANIME) { title { romaji native } coverImage { extraLarge } averageScore episodes status startDate { year month day } endDate { year month day } format genres } }`;
-      const json = await fetch("https://graphql.anilist.co", {
+      const reqInit: RequestInit = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
-      }).then(r => r.json());
+      };
+      // AniList rate-limits/5xx transiently; retry once before giving up.
+      let json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      if (!json) json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      if (!json) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = json.data?.Media;
       if (!a) { await ctx.reply(`Not found: "${query}"`); return; }
       const fmt = (d: { year?: number; month?: number; day?: number }) =>
@@ -55,14 +63,14 @@ registerAddon({
         `• Aired: ${fmt(a.startDate)} → ${a.endDate?.year ? fmt(a.endDate) : "ongoing"}`,
         `• Genres: ${a.genres?.join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (a.coverImage?.extraLarge) await ctx.replyWithPhoto(a.coverImage.extraLarge, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, a.coverImage?.extraLarge, lines);
     });
 
     bot.command("mal", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /mal <title>"); return; }
-      const d = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`).then(r => r.json());
+      const d = await safeFetchJson<JikanAnimeResp>(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`);
+      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const a = d.data[0];
       const lines = [
@@ -77,8 +85,7 @@ registerAddon({
         `• Genres: ${a.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Studios: ${a.studios?.map((s: { name: string }) => s.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      if (a.images?.jpg?.large_image_url) await ctx.replyWithPhoto(a.images.jpg.large_image_url, { caption: lines, parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
-      else await safeReply(ctx, lines, { reply_parameters: { message_id: ctx.message!.message_id } });
+      await replyWithPhotoOrText(ctx, a.images?.jpg?.large_image_url, lines);
     });
   },
 });

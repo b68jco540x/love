@@ -1,5 +1,5 @@
-import type { Bot } from "https://deno.land/x/grammy@v1.44.0/mod.ts";
-import type { Addon, Env } from "./types.ts";
+import type { Bot } from "grammy";
+import type { Addon, Env } from "./types.js";
 
 const addons: Addon[] = [];
 
@@ -22,4 +22,8 @@ export function generateHelp(): string {
     .flatMap(a => a.commands)
     .map(c => `/${c.cmd} — ${c.desc}`)
     .join("\n");
+}
+
+export function generateBotCommands(): { command: string; description: string }[] {
+  return addons.flatMap(a => a.commands).map(c => ({ command: c.cmd, description: c.desc }));
 }
