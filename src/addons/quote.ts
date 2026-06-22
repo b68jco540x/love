@@ -12,10 +12,6 @@ function escMd(s: string): string {
   return s.replace(/[\\*_`[\]]/g, "\\$&");
 }
 
-// Cron entrypoint — edits a fixed channel msg with a fresh hitokoto.cn quote,
-// using Telegram's Rich Message format (Bot API 10.1, June 2026): blockquote
-// for the saying, bold author, date_time footer for "last updated".
-// NOTE: Telegram editMessageText only works on msgs originally sent by THIS bot.
 export async function updateQuote(env: Env): Promise<void> {
   if (!env.QUOTE_CHANNEL_ID || !env.QUOTE_MESSAGE_ID) {
     console.log("quote: QUOTE_CHANNEL_ID/QUOTE_MESSAGE_ID not set, skip");
@@ -32,7 +28,6 @@ export async function updateQuote(env: Env): Promise<void> {
     ``,
     `— **${escMd(author)}**`,
     ``,
-    `updated ![now](tg://time?unix=${now}&format=r)`,
   ].join("\n");
 
   const data = await safeFetchJson<{ ok: boolean; description?: string }>(
