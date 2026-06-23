@@ -93,6 +93,7 @@ registerAddon({
     bot.callbackQuery(/^tmdb:(\d+)$/, async (ctx) => {
       const id = Number(ctx.match![1]);
       await ctx.answerCallbackQuery();
+      await ctx.editMessageReplyMarkup().catch(() => {}); // strip the picker buttons on first tap, prevents spam-clicking
       const d = await fetchMovie(id);
       if (!d) { await ctx.reply("Failed to fetch movie details, try again later."); return; }
       const { text, poster } = movieCard(d);
