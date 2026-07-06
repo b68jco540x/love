@@ -11,9 +11,9 @@ export function getAddons(): Addon[] {
   return addons;
 }
 
-export function loadAddons(bot: Bot, env: Env) {
+export function loadAddons(bot: Bot, env: Env, execCtx?: ExecutionContext) {
   for (const addon of addons) {
-    addon.register(bot, env);
+    addon.register(bot, env, execCtx);
   }
 }
 
