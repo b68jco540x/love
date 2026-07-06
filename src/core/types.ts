@@ -20,5 +20,5 @@ export interface Command {
 export interface Addon {
   name: string;
   commands: Command[];
-  register(bot: Bot, env: Env): void;
+  register(bot: Bot, env: Env, execCtx?: ExecutionContext): void;
 }
