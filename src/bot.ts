@@ -43,7 +43,7 @@ export default {
         await ctx.reply(`*Commands:*\n\n${generateHelp()}`, { parse_mode: "Markdown", reply_parameters: { message_id: ctx.message!.message_id } });
       });
 
-      loadAddons(bot, env);
+      loadAddons(bot, env, ctx);
 
       return await webhookCallback(bot, "cloudflare-mod")(request);
     } catch (e) {
