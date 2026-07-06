@@ -48,9 +48,19 @@ registerAddon({
   name: "tmdb",
   commands: [{ cmd: "tmdb", desc: "movie info (TMDB) 🎬 <title>" }],
 
-  register(bot: Bot, env: Env) {
+  register(bot: Bot, env: Env, execCtx?: ExecutionContext) {
     function fetchMovie(id: number) {
       return safeFetchJson<TmdbMovieDetails>(`https://api.themoviedb.org/3/movie/${id}?api_key=${env.TMDB_API_KEY}`);
+    }
+
+    // Auto-strip the picker keyboard after 60s so old buttons can't be spam-tapped.
+    function scheduleKbRemoval(chatId: number, messageId: number) {
+      if (!execCtx) return;
+      execCtx.waitUntil(
+        new Promise<void>((resolve) => setTimeout(resolve, 60_000)).then(() =>
+          bot.api.editMessageReplyMarkup(chatId, messageId, { reply_markup: { inline_keyboard: [] } }).catch(() => {})
+        )
+      );
     }
 
     bot.command("tmdb", async (ctx) => {
@@ -83,11 +93,13 @@ registerAddon({
       const kb = new InlineKeyboard();
       results.forEach((r, i) => kb.text(`${i + 1}`, `tmdb:${r.id}`));
 
-      await safeReply(ctx, [`Hasil buat *"${query}"*, pilih nomor:`, ``, ...lines].join("\n"), {
+      const sent = await ctx.reply([`Hasil buat *"${query}"*, pilih nomor:`, ``, ...lines].join("\n"), {
+        parse_mode: "Markdown",
         reply_markup: kb,
         link_preview_options: { is_disabled: true },
         reply_parameters: replyTo(ctx),
       });
+      if (ctx.chat) scheduleKbRemoval(ctx.chat.id, sent.message_id);
     });
 
     bot.callbackQuery(/^tmdb:(\d+)$/, async (ctx) => {
