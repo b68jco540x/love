@@ -44,9 +44,11 @@ registerAddon({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
       };
-      // AniList rate-limits/5xx transiently; retry once before giving up.
-      let json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
-      if (!json) json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      // safeFetchJson already retries 429/5xx and sends a real User-Agent.
+      // AniList also sits behind Cloudflare bot detection though, which no
+      // amount of retrying fixes - check wrangler tail for the logged
+      // status/body if this keeps failing.
+      const json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit, { retries: 2 });
       if (!json) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = json.data?.Media;
       if (!a) { await ctx.reply(`Not found: "${query}"`); return; }
