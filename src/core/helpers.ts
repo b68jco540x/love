@@ -22,6 +22,18 @@ export async function safeFetchJson<T = unknown>(url: string, init?: RequestInit
   }
 }
 
+// Jikan intermittently 504s ("Jikan failed to connect to MyAnimeList") on
+// otherwise-valid requests, independent of client/IP - known upstream issue
+// (jikan-me/jikan-rest#610). Retry a couple times with backoff before giving up.
+export async function fetchJikanJson<T = unknown>(url: string, retries = 2, delayMs = 500): Promise<T | null> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await safeFetchJson<T>(url);
+    if (res) return res;
+    if (attempt < retries) await new Promise((r) => setTimeout(r, delayMs * (attempt + 1)));
+  }
+  return null;
+}
+
 export async function editPhoto(
   token: string,
   chatId: number,

@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, fetchJikanJson } from "../core/helpers.js";
 
 interface JikanMangaResp { data?: Record<string, any>[] }
 
@@ -13,7 +13,7 @@ registerAddon({
     bot.command("manga", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /manga <title>"); return; }
-      const d = await safeFetchJson<JikanMangaResp>(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=1`);
+      const d = await fetchJikanJson<JikanMangaResp>(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=1`);
       if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const m = d.data[0];

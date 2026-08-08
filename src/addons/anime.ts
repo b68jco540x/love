@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { Env } from "../core/types.js";
 import { registerAddon } from "../core/index.js";
-import { replyWithPhotoOrText, safeFetchJson } from "../core/helpers.js";
+import { replyWithPhotoOrText, safeFetchJson, fetchJikanJson } from "../core/helpers.js";
 
 interface KitsuResp { data?: { attributes: Record<string, any> }[] }
 interface AniListResp { data?: { Media: Record<string, any> | null } }
@@ -44,7 +44,7 @@ registerAddon({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
       };
-      // AniList rate-limits/5xx transiently; retry once (after a short delay) before giving up.
+      // AniList rate-limits/5xx transiently; retry once before giving up.
       let json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
       if (!json) {
         await new Promise((r) => setTimeout(r, 600));
@@ -72,7 +72,7 @@ registerAddon({
     bot.command("mal", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /mal <title>"); return; }
-      const d = await safeFetchJson<JikanAnimeResp>(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`);
+      const d = await fetchJikanJson<JikanAnimeResp>(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`);
       if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
       const a = d.data[0];
