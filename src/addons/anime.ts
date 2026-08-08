@@ -6,6 +6,7 @@ import { replyWithPhotoOrText, safeFetchJson, fetchJikanJson } from "../core/hel
 interface KitsuResp { data?: { attributes: Record<string, any> }[] }
 interface AniListResp { data?: { Media: Record<string, any> | null } }
 interface JikanAnimeResp { data?: Record<string, any>[] }
+interface JikanEdgeDetail { data?: Record<string, any> }
 
 registerAddon({
   name: "anime",
@@ -72,13 +73,16 @@ registerAddon({
     bot.command("mal", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /mal <title>"); return; }
-      const d = await fetchJikanJson<JikanAnimeResp>(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`);
-      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
-      if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
-      const a = d.data[0];
+      // jikan-edge: no `limit` param, camelCase fields, {data} envelope. Search then detail.
+      const search = await fetchJikanJson<JikanAnimeResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/anime?q=${encodeURIComponent(query)}`);
+      if (!search) { await ctx.reply("Failed to fetch data, try again later."); return; }
+      if (!search.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
+      const detail = await fetchJikanJson<JikanEdgeDetail>(`https://jikan-edge.lucas-hdo.workers.dev/v1/anime/${search.data[0].malId}`);
+      if (!detail?.data) { await ctx.reply("Failed to fetch data, try again later."); return; }
+      const a = detail.data;
       const lines = [
         `*${a.title}*`,
-        a.title_japanese ? `(${a.title_japanese})` : "",
+        a.titleJapanese ? `(${a.titleJapanese})` : "",
         ``,
         `• Score: ${a.score ? a.score + "/10" : "N/A"}`,
         `• Episodes: ${a.episodes ?? "?"}`,
@@ -88,7 +92,7 @@ registerAddon({
         `• Genres: ${a.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Studios: ${a.studios?.map((s: { name: string }) => s.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      await replyWithPhotoOrText(ctx, a.images?.jpg?.large_image_url, lines);
+      await replyWithPhotoOrText(ctx, a.images?.large ?? a.imageUrl, lines);
     });
   },
 });

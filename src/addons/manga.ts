@@ -4,6 +4,7 @@ import { registerAddon } from "../core/index.js";
 import { replyWithPhotoOrText, fetchJikanJson } from "../core/helpers.js";
 
 interface JikanMangaResp { data?: Record<string, any>[] }
+interface JikanEdgeDetail { data?: Record<string, any> }
 
 registerAddon({
   name: "manga",
@@ -13,13 +14,15 @@ registerAddon({
     bot.command("manga", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /manga <title>"); return; }
-      const d = await fetchJikanJson<JikanMangaResp>(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=1`);
-      if (!d) { await ctx.reply("Failed to fetch data, try again later."); return; }
-      if (!d.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
-      const m = d.data[0];
+      const search = await fetchJikanJson<JikanMangaResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/manga?q=${encodeURIComponent(query)}`);
+      if (!search) { await ctx.reply("Failed to fetch data, try again later."); return; }
+      if (!search.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
+      const detail = await fetchJikanJson<JikanEdgeDetail>(`https://jikan-edge.lucas-hdo.workers.dev/v1/manga/${search.data[0].malId}`);
+      if (!detail?.data) { await ctx.reply("Failed to fetch data, try again later."); return; }
+      const m = detail.data;
       const lines = [
         `*${m.title}*`,
-        m.title_japanese ? `(${m.title_japanese})` : "",
+        m.titleJapanese ? `(${m.titleJapanese})` : "",
         ``,
         `• Score: ${m.score ? m.score + "/10" : "N/A"}`,
         `• Chapters: ${m.chapters ?? "?"}`,
@@ -30,7 +33,7 @@ registerAddon({
         `• Genres: ${m.genres?.map((g: { name: string }) => g.name).join(", ") ?? "N/A"}`,
         `• Authors: ${m.authors?.map((a: { name: string }) => a.name).join(", ") ?? "N/A"}`,
       ].filter(Boolean).join("\n");
-      await replyWithPhotoOrText(ctx, m.images?.jpg?.large_image_url, lines);
+      await replyWithPhotoOrText(ctx, m.images?.large ?? m.imageUrl, lines);
     });
   },
 });
