@@ -5,4 +5,74 @@ export function refreshKb(cbData: string): InlineKeyboard {
   return new InlineKeyboard().text("ğŸ”„ Refresh", cbData);
 }
 
-// Wraps fetch+¡Í½¸İ¥Ñ ÑÉä½…Ñ €¬€¹½¬¡•¬¸I•ÑÕÉ¹Ì¹Õ±°½¸…¹ä™…¥±ÕÉ”(¼¼€¡¹•Ñİ½É¬•ÉÉ½È°¹½¸´Éáà°‰…©Í½¸¤¥¹ÍÑ•…½˜Ñ¡É½İ¥¹œ¥¹Ñ¼Ñ¡”¡…¹‘±•È¸)•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸Í…™••Ñ¡)Í½¸ñP€ôÕ¹­¹½İ¸ø¡ÕÉ°èÍÑÉ¥¹œ°¥¹¥ĞüèI•ÅÕ•ÍÑ%¹¥Ğ¤èAÉ½µ¥Í”ñPğ¹Õ±°øì(€ÑÉäì(€€€½¹ÍĞ¡•…‘•ÉÌ€ôì€‰UÍ•Èµ•¹Ğˆè€‰±½Ù”µÑœµ‰½Ğ¼Ä¸À€ ­¡ÑÑÁÌè¼½¥Ñ¡Õˆ¹½´½ˆØá©¼ÔĞÁà½±½Ù”¤ˆ°€¸¸¸¡¥¹¥Ğü¹¡•…‘•ÉÌ€üüíô¤ôì(€€€½¹ÍĞÉ•Ì€ô…İ…¥Ğ™•Ñ ¡ÕÉ°°ì€¸¸¹¥¹¥Ğ°¡•…‘•ÉÌô¤ì(€€€¥˜€ …É•Ì¹½¬¤ì(€€€€€½¹Í½±”¹•ÉÉ½È¡™•Ñ €‘íÉ•Ì¹ÍÑ…ÑÕÍô€‘íÉ•Ì¹ÍÑ…ÑÕÍQ•áÑôè€‘íÕÉ±õ€¤ì(€€€€€É•ÑÕÉ¸¹Õ±°ì(€€€ô(€€€É•ÑÕÉ¸…İ…¥ĞÉ•Ì¹©Í½¸ ¤…ÌPì(€ô…Ñ €¡•ÉÈ¤ì(€€€½¹Í½±”¹•ÉÉ½È¡™•Ñ •ÉÉ½Èè€‘íÕÉ±õ€°•ÉÈ¤ì(€€€É•ÑÕÉ¸¹Õ±°ì(€ô)ô()•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸•‘¥ÑA¡½Ñ¼ (€Ñ½­•¸èÍÑÉ¥¹œ°(€¡…Ñ%è¹Õµ‰•È°(€µ•ÍÍ…•%è¹Õµ‰•È°(€Á¡½Ñ½UÉ°èÍÑÉ¥¹œ°(€…ÁÑ¥½¸èÍÑÉ¥¹œğ¹Õ±°°(€­ˆè%¹±¥¹•-•å‰½…É°(¤èAÉ½µ¥Í”ñ‰½½±•…¸øì(€½¹ÍĞµ•‘¥„èI•½ÉñÍÑÉ¥¹œ°Õ¹­¹½İ¸ø€ôìÑåÁ”è€‰Á¡½Ñ¼ˆ°µ•‘¥„èÁ¡½Ñ½UÉ°ôì(€¥˜€¡…ÁÑ¥½¸¤ìµ•‘¥„¹…ÁÑ¥½¸€ô…ÁÑ¥½¸ìµ•‘¥„¹Á…ÉÍ•}µ½‘”€ô€‰5…É­‘½İ¸ˆìô(€½¹ÍĞ‘…Ñ„€ô…İ…¥ĞÍ…™••Ñ¡)Í½¸ñì½¬è‰½½±•…¸ì‘•ÍÉ¥ÁÑ¥½¸üèÍÑÉ¥¹œôø (€€€¡ÑÑÁÌè¼½…Á¤¹Ñ•±•É…´¹½Éœ½‰½Ğ‘íÑ½­•¹ô½•‘¥Ñ5•ÍÍ…•5•‘¥…€°(€€€ì(€€€€€µ•Ñ¡½è€‰A=MPˆ°(€€€€€¡•…‘•ÉÌèì€‰½¹Ñ•¹ĞµQåÁ”ˆè€‰…ÁÁ±¥…Ñ¥½¸½©Í½¸ˆô°(€€€€€‰½‘äè)M=8¹ÍÑÉ¥¹¥™ä¡ì¡…Ñ}¥è¡…Ñ%°µ•ÍÍ…•}¥èµ•ÍÍ…•%°µ•‘¥„°É•Á±å}µ…É­ÕÀè­ˆô¤°(€€€ô°(€€¤ì(€¥˜€ …‘…Ñ„ñğ€…‘…Ñ„¹½¬¤ì(€€€½¹Í½±”¹•ÉÉ½È ‰•‘¥ÑA¡½Ñ¼™…¥±•èˆ°‘…Ñ„ü¹‘•ÍÉ¥ÁÑ¥½¸€üü€‰¹¼É•ÍÁ½¹Í”ˆ¤ì(€€€É•ÑÕÉ¸™…±Í”ì(€ô(€É•ÑÕÉ¸ÑÉÕ”ì)ô()•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸Í…™•I•Á±ä¡Ñàè½¹Ñ•áĞ°Ñ•áĞèÍÑÉ¥¹œ°½ÁÑÌèI•½ÉñÍÑÉ¥¹œ°Õ¹­¹½İ¸ø€ôíô¤ì(€ÑÉäì…İ…¥ĞÑà¹É•Á±ä¡Ñ•áĞ°ìÁ…ÉÍ•}µ½‘”è€‰5…É­‘½İ¸ˆ°€¸¸¹½ÁÑÌô¤ìô(€…Ñ ì…İ…¥ĞÑà¹É•Á±ä¡Ñ•áĞ°½ÁÑÌ¤ìô)ô((¼¼	Õ¥±‘ÌÑ¡”É•Á±å}Á…É…µ•Ñ•ÉÌÙ…±Õ”Ñ¡…ĞÅÕ½Ñ•ÌÑ¡”ÕÍ•ÈÌÑÉ¥•É¥¹œµ•ÍÍ…”¸(¼¼•¹ÑÉ…±¥é•ÌÑ¡”Ñà¹µ•ÍÍ…”„¹µ•ÍÍ…•}¥‘€…•ÍÌÉ•Á•…Ñ•…É½ÍÌ•Ù•Éä…‘‘½¸¸)•áÁ½ÉĞ™Õ¹Ñ¥½¸É•Á±åQ¼¡Ñàè½¹Ñ•áĞ¤èìµ•ÍÍ…•}¥è¹Õµ‰•Èôì(€É•ÑÕÉ¸ìµ•ÍÍ…•}¥èÑà¹µ•ÍÍ…”„¹µ•ÍÍ…•}¥ôì)ô((¼¼M¡…É•€‰¥¹™¼…ÉˆÉ•Á±äèÍ•¹„Á¡½Ñ¼İ¥Ñ „5…É­‘½İ¸…ÁÑ¥½¸İ¡•¸…¸¥µ…”(¼¼¥Ì…Ù…¥±…‰±”°½Ñ¡•Éİ¥Í”™…±°‰…¬Ñ¼„Á±…¥¸5…É­‘½İ¸Ñ•áĞÉ•Á±ä¸	½Ñ Á…Ñ¡Ì(¼¼ÅÕ½Ñ”Ñ¡”ÑÉ¥•É¥¹œµ•ÍÍ…”¸UÍ•‰ä…¹¥µ”½µ…¹„½Á½­•µ½¸½Ñµ‘ˆ½É•Œ¸)•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸É•Á±å]¥Ñ¡A¡½Ñ½=ÉQ•áĞ (€Ñàè½¹Ñ•áĞ°(€Á¡½Ñ¼èÍÑÉ¥¹œğ¹Õ±°ğÕ¹‘•™¥¹•°(€Ñ•áĞèÍÑÉ¥¹œ°(¤èAÉ½µ¥Í”ñÙ½¥øì(€¥˜€¡Á¡½Ñ¼¤ì(€€€…İ…¥ĞÑà¹É•Á±å]¥Ñ¡A¡½Ñ¼¡Á¡½Ñ¼°ì(€€€€€…ÁÑ¥½¸èÑ•áĞ°(€€€€€Á…ÉÍ•}µ½‘”è€‰5…É­‘½İ¸ˆ°(€€€€€É•Á±å}Á…É…µ•Ñ•ÉÌèÉ•Á±åQ¼¡Ñà¤°(€€€ô¤ì(€ô•±Í”ì(€€€…İ…¥ĞÍ…™•I•Á±ä¡Ñà°Ñ•áĞ°ìÉ•Á±å}Á…É…µ•Ñ•ÉÌèÉ•Á±åQ¼¡Ñà¤ô¤ì(€ô)ô
+// Wraps fetch+json with try/catch + .ok check. Returns null on any failure
+// (network error, non-2xx, bad json) instead of throwing into the handler.
+export async function safeFetchJson<T = unknown>(url: string, init?: RequestInit): Promise<T | null> {
+  try {
+    const headers = { "User-Agent": "love-tg-bot/1.0 (+https://github.com/b68jco540x/love)", ...(init?.headers ?? {}) };
+    const res = await fetch(url, { ...init, headers });
+    if (!res.ok) {
+      console.error(`fetch ${res.status} ${res.statusText}: ${url}`);
+      return null;
+    }
+    return await res.json() as T;
+  } catch (err) {
+    console.error(`fetch error: ${url}`, err);
+    return null;
+  }
+}
+
+export async function editPhoto(
+  token: string,
+  chatId: number,
+  messageId: number,
+  photoUrl: string,
+  caption: string | null,
+  kb: InlineKeyboard,
+): Promise<boolean> {
+  const media: Record<string, unknown> = { type: "photo", media: photoUrl };
+  if (caption) { media.caption = caption; media.parse_mode = "Markdown"; }
+  const data = await safeFetchJson<{ ok: boolean; description?: string }>(
+    `https://api.telegram.org/bot${token}/editMessageMedia`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, message_id: messageId, media, reply_markup: kb }),
+    },
+  );
+  if (!data || !data.ok) {
+    console.error("editPhoto failed:", data?.description ?? "no response");
+    return false;
+  }
+  return true;
+}
+
+export async function safeReply(ctx: Context, text: string, opts: Record<string, unknown> = {}) {
+  try { await ctx.reply(text, { parse_mode: "Markdown", ...opts }); }
+  catch { await ctx.reply(text, opts); }
+}
+
+// Builds the reply_parameters value that quotes the user's triggering message.
+// Centralizes the `ctx.message!.message_id` access repeated across every addon.
+export function replyTo(ctx: Context): { message_id: number } {
+  return { message_id: ctx.message!.message_id };
+}
+
+// Shared "info card" reply: send a photo with a Markdown caption when an image
+// is available, otherwise fall back to a plain Markdown text reply. Both paths
+// quote the triggering message. Used by anime/manga/pokemon/tmdb/rec.
+export async function replyWithPhotoOrText(
+  ctx: Context,
+  photo: string | null | undefined,
+  text: string,
+): Promise<void> {
+  if (photo) {
+    await ctx.replyWithPhoto(photo, {
+      caption: text,
+      parse_mode: "Markdown",
+      reply_parameters: replyTo(ctx),
+    });
+  } else {
+    await safeReply(ctx, text, { reply_parameters: replyTo(ctx) });
+  }
+}
