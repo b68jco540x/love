@@ -9,7 +9,8 @@ export function refreshKb(cbData: string): InlineKeyboard {
 // (network error, non-2xx, bad json) instead of throwing into the handler.
 export async function safeFetchJson<T = unknown>(url: string, init?: RequestInit): Promise<T | null> {
   try {
-    const res = await fetch(url, init);
+    const headers = { "User-Agent": "love-tg-bot/1.0 (+https://github.com/b68jco540x/love)", ...(init?.headers ?? {}) };
+    const res = await fetch(url, { ...init, headers });
     if (!res.ok) {
       console.error(`fetch ${res.status} ${res.statusText}: ${url}`);
       return null;

@@ -44,9 +44,12 @@ registerAddon({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: gql, variables: { search: query } }),
       };
-      // AniList rate-limits/5xx transiently; retry once before giving up.
+      // AniList rate-limits/5xx transiently; retry once (after a short delay) before giving up.
       let json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
-      if (!json) json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      if (!json) {
+        await new Promise((r) => setTimeout(r, 600));
+        json = await safeFetchJson<AniListResp>("https://graphql.anilist.co", reqInit);
+      }
       if (!json) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = json.data?.Media;
       if (!a) { await ctx.reply(`Not found: "${query}"`); return; }
