@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "vitest run",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "tail": "wrangler tail"
@@ -12,8 +13,10 @@
     "grammy": "^1.44.0"
   },
   "devDependencies": {
-    "wrangler": "^4.101.0",
     "@cloudflare/workers-types": "^4.20260617.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1",
+    "wrangler": "^4.101.0"
   }
 }

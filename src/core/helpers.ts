@@ -1,6 +1,8 @@
 import { InlineKeyboard } from "grammy";
 import type { Context } from "grammy";
 
+export const JIKAN_BASE_URL = "https://jikan-edge.lucas-hdo.workers.dev/v1";
+
 export function refreshKb(cbData: string): InlineKeyboard {
   return new InlineKeyboard().text("🔄 Refresh", cbData);
 }
