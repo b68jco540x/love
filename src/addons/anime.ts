@@ -74,10 +74,10 @@ registerAddon({
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /mal <title>"); return; }
       // jikan-edge: no `limit` param, camelCase fields, {data} envelope. Search then detail.
-      const search = await fetchJikanJson<JikanAnimeResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/anime?q=${encodeURIComponent(query)}`);
+      const search = await fetchJikanJson<JikanAnimeResp>(`/anime?q=${encodeURIComponent(query)}`);
       if (!search) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!search.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
-      const detail = await fetchJikanJson<JikanEdgeDetail>(`https://jikan-edge.lucas-hdo.workers.dev/v1/anime/${search.data[0].malId}`);
+      const detail = await fetchJikanJson<JikanEdgeDetail>(`/anime/${search.data[0].malId}`);
       if (!detail?.data) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const a = detail.data;
       const lines = [

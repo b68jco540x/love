@@ -20,11 +20,11 @@ registerAddon({
         return;
       }
       // jikan-edge: no `limit` param on search.
-      const sd = await fetchJikanJson<JikanSearchResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/${type}?q=${encodeURIComponent(title)}`);
+      const sd = await fetchJikanJson<JikanSearchResp>(`/${type}?q=${encodeURIComponent(title)}`);
       if (!sd) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!sd.data?.length) { await ctx.reply(`Not found: "${title}"`); return; }
       const item = sd.data[0];
-      const rd = await fetchJikanJson<JikanRecResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/${type}/${item.malId}/recommendations`);
+      const rd = await fetchJikanJson<JikanRecResp>(`/${type}/${item.malId}/recommendations`);
       if (!rd) { await ctx.reply("Failed to fetch recommendations, try again later."); return; }
       if (!rd.data?.length) { await ctx.reply(`No recommendations for "${item.title}".`); return; }
       const lines = [

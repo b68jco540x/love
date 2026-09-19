@@ -14,10 +14,10 @@ registerAddon({
     bot.command("manga", async (ctx) => {
       const query = ctx.match?.trim() ?? "";
       if (!query) { await ctx.reply("Usage: /manga <title>"); return; }
-      const search = await fetchJikanJson<JikanMangaResp>(`https://jikan-edge.lucas-hdo.workers.dev/v1/manga?q=${encodeURIComponent(query)}`);
+      const search = await fetchJikanJson<JikanMangaResp>(`/manga?q=${encodeURIComponent(query)}`);
       if (!search) { await ctx.reply("Failed to fetch data, try again later."); return; }
       if (!search.data?.length) { await ctx.reply(`Not found: "${query}"`); return; }
-      const detail = await fetchJikanJson<JikanEdgeDetail>(`https://jikan-edge.lucas-hdo.workers.dev/v1/manga/${search.data[0].malId}`);
+      const detail = await fetchJikanJson<JikanEdgeDetail>(`/manga/${search.data[0].malId}`);
       if (!detail?.data) { await ctx.reply("Failed to fetch data, try again later."); return; }
       const m = detail.data;
       const lines = [

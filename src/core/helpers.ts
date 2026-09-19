@@ -22,10 +22,13 @@ export async function safeFetchJson<T = unknown>(url: string, init?: RequestInit
   }
 }
 
+export const JIKAN_BASE_URL = "https://jikan-edge.lucas-hdo.workers.dev/v1";
+
 // Jikan intermittently 504s ("Jikan failed to connect to MyAnimeList") on
 // otherwise-valid requests, independent of client/IP - known upstream issue
 // (jikan-me/jikan-rest#610). Retry a couple times with backoff before giving up.
-export async function fetchJikanJson<T = unknown>(url: string, retries = 2, delayMs = 500): Promise<T | null> {
+export async function fetchJikanJson<T = unknown>(pathOrUrl: string, retries = 2, delayMs = 500): Promise<T | null> {
+  const url = pathOrUrl.startsWith("/") ? `${JIKAN_BASE_URL}${pathOrUrl}` : pathOrUrl;
   for (let attempt = 0; attempt <= retries; attempt++) {
     const res = await safeFetchJson<T>(url);
     if (res) return res;
