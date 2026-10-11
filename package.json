@@ -9,7 +9,7 @@
     "tail": "wrangler tail"
   },
   "dependencies": {
-    "grammy": "^1.44.0"
+    "grammy": "^1.46.0"
   },
   "devDependencies": {
     "wrangler": "^4.101.0",
